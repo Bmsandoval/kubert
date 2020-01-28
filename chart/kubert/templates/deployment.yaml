@@ -25,7 +25,7 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image }}"
+          image: "{{.Values.registry}}/{{.Chart.Name}}:{{.Chart.Version}}"
           imagePullPolicy: {{ .Values.pullPolicy }}
           ports:
             - name: http
@@ -37,7 +37,7 @@ spec:
               port: http
           readinessProbe:
             httpGet:
-              path: /health
+              path: /ready
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
