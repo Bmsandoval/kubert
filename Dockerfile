@@ -1,49 +1,41 @@
+# Dockerfile References: https://docs.docker.com/engine/reference/builder/
+# pulled from https://www.callicoder.com/deploy-containerized-go-app-kubernetes/
+
+# Start from the latest golang base image
+FROM golang:1.13 as builder
+
+# Add Maintainer Info
+LABEL maintainer="Bryan Sandoval <bmsandoval@gmail.com>"
+
+# Set the Current Working Directory inside the container
+WORKDIR /app
+
+# Copy go mod and sum files
+COPY go.mod go.sum ./
+
+# Download all dependancies. Dependencies will be cached if the go.mod and go.sum files are not changed
+RUN go mod download
+
+# Copy the source from the current directory to the Working Directory inside the container
+COPY . .
+
+# Build the Go app
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+
+
+######## Start a new stage from scratch #######
+#FROM alpine:latest
+#RUN apk --no-cache add ca-certificates
 FROM scratch
 
+WORKDIR /root/
+
+# Copy the Pre-built binary file from the previous stage
+COPY --from=builder /app/main .
+
+# Expose port 8080 to the outside world
 ENV PORT 8080
-EXPOSE $PORT
+EXPOSE 8080
 
-COPY kubert /
-CMD ["/kubert"]
-
-
-
-#FROM node:10.12.0-alpine as ship
-#
-## Copyright (c) Alex Ellis 2019. All rights reserved.
-## Licensed under the MIT license. See LICENSE file in the project root for full license information.
-#
-#RUN addgroup -S app && adduser -S -g app app
-#
-#RUN apk --no-cache add ca-certificates
-#
-#WORKDIR /root/
-#
-## Turn down the verbosity to default level.
-#ENV NPM_CONFIG_LOGLEVEL warn
-#
-#RUN mkdir -p /home/app
-#
-## Wrapper/boot-strapper
-#WORKDIR /home/app
-#COPY package.json ./
-#
-## This ordering means the npm installation is cached for the outer function handler.
-#RUN npm i
-#
-## Copy outer function handler
-#COPY index.js ./
-#COPY routes routes
-#
-## Set correct permissions to use non root user
-#WORKDIR /home/app/
-#
-## chmod for tmp is for a buildkit issue (@alexellis)
-#RUN chown app:app -R /home/app \
-#    && chmod 777 /tmp
-#
-#USER app
-#
-#RUN touch /tmp/.lock
-#
-#CMD ["node", "index.js"]
+# Command to run the executable
+CMD ["./main"]
