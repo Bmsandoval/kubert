@@ -7,7 +7,7 @@ import (
 // Router register necessary routes and returns an instance of a router.
 func Router() *mux.Router {
 	r := mux.NewRouter()
-	r.HandleFunc("/home", home).Methods("GET")
+	r.HandleFunc("/home", home)
 	r.HandleFunc("/health", health)
 	r.HandleFunc("/ready", ready)
 	return r

@@ -3,7 +3,8 @@ PORT?=8080
 PROJECT?=github.com/bmsandoval/kubert
 CONTAINER_IMAGE?=docker.io/bmsandoval/${APP}
 
-RELEASE?=0.0.1
+RELEASE?=0.0.2
+
 COMMIT?=$(shell git rev-parse --short HEAD)
 BUILD_TIME?=$(shell date -u '+%Y-%m-%d_%H:%M:%S')
 
@@ -11,7 +12,7 @@ GOOS?=linux
 GOARCH?=amd64
 
 clean:
-		rm -f ${APP}
+	rm -f ${APP}
 
 compile: clean
 	CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH} go build \
@@ -32,10 +33,13 @@ push: container
 	docker push $(CONTAINER_IMAGE):$(RELEASE)
 
 minikube: push
-	helm upgrade --install test-app ./chart/kubert
+	helm upgrade --install dev-${APP} ./chart/kubert
+
+remove:
+	helm delete dev-${APP}
 
 test:
-		go test -v -race ./...
+	go test -v -race ./...
 
 #.PHONY: charts
 #all: charts
