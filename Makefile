@@ -2,6 +2,7 @@ APP?=kubert
 PORT?=8080
 PROJECT?=github.com/bmsandoval/kubert
 CONTAINER_IMAGE?=docker.io/bmsandoval/${APP}
+DEV_IMAGE?=docker.io/bmsandoval/go-build
 
 RELEASE?=0.0.3
 
@@ -14,8 +15,8 @@ GOARCH?=amd64
 
 # Should only ever need to be run once
 push-dev:
-	docker build -f ./deployment/Dockerfile-dev -t go-build:latest .
-	docker push go-build:latest
+	docker build -f ./deployment/Dockerfile-dev -t $(DEV_IMAGE):latest .
+	docker push $(DEV_IMAGE):latest
 
 push-staging:
 	docker build -f ./deployment/Dockerfile-staging -t $(CONTAINER_IMAGE):$(RELEASE)-staging .
