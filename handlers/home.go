@@ -6,5 +6,5 @@ import (
 
 // home is a simple HTTP handler function which writes a response.
 func home(w http.ResponseWriter, _ *http.Request) {
-	w.Write([]byte("your mom went to college"))
+	w.Write([]byte("Your mom went to college"))
 }

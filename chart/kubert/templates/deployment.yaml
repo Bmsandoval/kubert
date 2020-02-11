@@ -25,20 +25,40 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{.Values.registry}}/{{.Chart.Name}}:{{.Chart.Version}}"
+          image: "{{.Values.registry}}/{{.Chart.Name}}:latest-dev"
           imagePullPolicy: {{ .Values.pullPolicy }}
+          command:
+            - "/bin/sh"
+            - "-c"
+            - |
+              cd /src
+              CompileDaemon -log-prefix=false -build="go build -v -mod vendor -o ../app/main ." -command="../app/main"
+          volumeMounts:
+            - mountPath: /src
+              name: go-source
+            - mountPath: /app
+              name: go-app
+            - mountPath: /cache
+              name: go-cache
+            - mountPath: /tmp
+              name: go-build
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /ready
-              port: http
+          env:
+            - name: PORT
+              value: "8080"
+            - name: GOCACHE
+              value: /cache
+{{/*          livenessProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /health*/}}
+{{/*              port: http*/}}
+{{/*          readinessProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /ready*/}}
+{{/*              port: http*/}}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
@@ -53,3 +73,14 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+      volumes:
+        - name: go-source
+          hostPath:
+            path: {{ .Values.Kubert.Volumes.GoSource }}
+        - name: go-cache
+          emptyDir: {}
+        - name: go-app
+          emptyDir: {}
+        - name: go-build
+          emptyDir: {}
+
