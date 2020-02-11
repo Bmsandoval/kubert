@@ -25,7 +25,7 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{.Values.registry}}/{{.Chart.Name}}:latest-dev"
+          image: "{{.Values.registry}}/go-build:latest"
           imagePullPolicy: {{ .Values.pullPolicy }}
           command:
             - "/bin/sh"

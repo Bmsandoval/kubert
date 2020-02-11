@@ -14,8 +14,8 @@ GOARCH?=amd64
 
 # Should only ever need to be run once
 push-dev:
-	docker build -f ./deployment/Dockerfile-dev -t $(CONTAINER_IMAGE):latest-dev .
-	docker push $(CONTAINER_IMAGE):latest-dev
+	docker build -f ./deployment/Dockerfile-dev -t go-build:latest .
+	docker push go-build:latest
 
 push-staging:
 	docker build -f ./deployment/Dockerfile-staging -t $(CONTAINER_IMAGE):$(RELEASE)-staging .
@@ -31,7 +31,6 @@ stop:
 	minikube stop
 
 start:
-
 	minikube start --mount-string ${CURDIR}:${CURDIR} --mount
 
 test:
