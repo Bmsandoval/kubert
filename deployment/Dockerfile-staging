@@ -8,7 +8,7 @@ FROM golang:1.13 as builder
 LABEL maintainer="Bryan Sandoval <bmsandoval@gmail.com>"
 
 # Set the Current Working Directory inside the container
-WORKDIR /app
+WORKDIR /src
 
 # Copy go mod and sum files
 COPY go.mod go.sum ./
@@ -28,10 +28,10 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 #RUN apk --no-cache add ca-certificates
 FROM scratch
 
-WORKDIR /root/
+WORKDIR /app/
 
 # Copy the Pre-built binary file from the previous stage
-COPY --from=builder /app/main .
+COPY --from=builder /src/main .
 
 # Expose port 8080 to the outside world
 ENV PORT 8080
