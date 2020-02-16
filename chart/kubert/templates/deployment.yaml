@@ -25,14 +25,16 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{.Values.registry}}/go-build:latest"
+          image: "golang:1.13"
           imagePullPolicy: {{ .Values.pullPolicy }}
           command:
             - "/bin/sh"
             - "-c"
             - |
               cd /src
-              CompileDaemon -log-prefix=false -build="go build -v -mod vendor -o ../app/main ." -command="../app/main"
+              while true; do
+                go run -mod vendor ./main.go
+              done
           volumeMounts:
             - mountPath: /src
               name: go-source
@@ -48,7 +50,7 @@ spec:
               protocol: TCP
           env:
             - name: PORT
-              value: "8080"
+              value: {{ .Values.service.port | quote }}
             - name: GOCACHE
               value: /cache
 {{/*          livenessProbe:*/}}
