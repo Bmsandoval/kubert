@@ -38,4 +38,8 @@ func home(w http.ResponseWriter, _ *http.Request) {
 		log.Fatalf("could not greet: %v", err)
 	}
 	log.Printf("Greeting: %s", r.GetMessage())
+
+	w.WriteHeader(200)
+	//w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(r.Message))
 }
