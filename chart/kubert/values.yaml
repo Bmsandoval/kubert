@@ -6,6 +6,7 @@ Kubert:
   Image: kubert
   ImageTag: latest-dev
   Volumes:
+    ProjectSource: /data
     GoSource: /Users/bryansandoval/projects/kubert
 
 replicaCount: 1

@@ -23,15 +23,6 @@ local:
 remove:
 	helm delete dev-${APP}
 
-stop:
-	minikube stop
-
-start:
-	minikube start --mount-string $(CURDIR):$(CURDIR) --mount --cpus 4 --memory 8192
-
-mount:
-	nohup minikube mount $(CURDIR):$(CURDIR) &
-
 test:
 	go test -v -race ./...
 

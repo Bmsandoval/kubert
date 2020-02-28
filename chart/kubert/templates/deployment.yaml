@@ -31,13 +31,13 @@ spec:
             - "/bin/sh"
             - "-c"
             - |
-              cd /src
+              cd /src/deployments/submodules/kubert
               while true; do
                 go run -mod vendor ./main.go
               done
           volumeMounts:
             - mountPath: /src
-              name: go-source
+              name: project-source
             - mountPath: /app
               name: go-app
             - mountPath: /cache
@@ -76,9 +76,9 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       volumes:
-        - name: go-source
+        - name: project-source
           hostPath:
-            path: {{ .Values.Kubert.Volumes.GoSource }}
+            path: {{ .Values.Kubert.Volumes.ProjectSource }}
         - name: go-cache
           emptyDir: {}
         - name: go-app
