@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kubert.fullname" . }}
+  labels:
+    {{- include "kubert.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "kubert.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kubert.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "kubert.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "golang:1.13"
+          imagePullPolicy: {{ .Values.pullPolicy }}
+          command:
+            - "/bin/sh"
+            - "-c"
+            - |
+              cd /src/deployments/submodules/kubert
+              while true; do
+                go run -mod vendor ./main.go
+              done
+          volumeMounts:
+            - mountPath: /src
+              name: project-source
+            - mountPath: /app
+              name: go-app
+            - mountPath: /cache
+              name: go-cache
+            - mountPath: /tmp
+              name: go-build
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: PORT
+              value: {{ .Values.service.port | quote }}
+            - name: GOCACHE
+              value: /cache
+{{/*          livenessProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /health*/}}
+{{/*              port: http*/}}
+{{/*          readinessProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /ready*/}}
+{{/*              port: http*/}}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+        - name: project-source
+          hostPath:
+            path: {{ .Values.Kubert.Volumes.ProjectSource }}
+        - name: go-cache
+          emptyDir: {}
+        - name: go-app
+          emptyDir: {}
+        - name: go-build
+          emptyDir: {}
+
