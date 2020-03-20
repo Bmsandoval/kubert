@@ -1,22 +1,23 @@
 {
 	"info": {
-		"_postman_id": "36e469b8-793b-40cf-9233-b76f5c20a134",
+		"_postman_id": "0a774e7b-a4c8-446d-860f-4f3d430ab989",
 		"name": "kubert",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "health",
+			"name": "hello",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{URL}}/health",
+					"raw": "{{URL}}/api/hello",
 					"host": [
 						"{{URL}}"
 					],
 					"path": [
-						"health"
+						"api",
+						"hello"
 					]
 				}
 			},
@@ -28,11 +29,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{URL}}/ready",
+					"raw": "{{URL}}/api/ready",
 					"host": [
 						"{{URL}}"
 					],
 					"path": [
+						"api",
 						"ready"
 					]
 				}
@@ -40,17 +42,18 @@
 			"response": []
 		},
 		{
-			"name": "home",
+			"name": "health",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{URL}}/home",
+					"raw": "{{URL}}/api/health",
 					"host": [
 						"{{URL}}"
 					],
 					"path": [
-						"home"
+						"api",
+						"health"
 					]
 				}
 			},

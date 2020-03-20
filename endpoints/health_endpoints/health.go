@@ -1,4 +1,4 @@
-package handlers
+package health_endpoints
 
 import "net/http"
 
