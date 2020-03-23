@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/bmsandoval/kubert/api/transport_http/http_routing"
 	"github.com/bmsandoval/kubert/configs"
-	"github.com/bmsandoval/kubert/grpc"
 	"github.com/bmsandoval/kubert/library/appcontext"
 	"github.com/bmsandoval/kubert/services"
+	"github.com/bmsandoval/kubert/services/grpc_service"
 	"github.com/gorilla/mux"
 	"log"
 
@@ -19,12 +19,12 @@ func Entry() {
 	if err != nil {
 		panic(err) }
 
-	grpcConnection, err := grpc.Start(*config)
+	grpcConnection, err := grpc_service.Start(*config)
 	if err != nil {
 		panic(err)
 	}
 	defer func() {
-		if err := grpc.Stop(); err != nil {
+		if err := grpc_service.Stop(); err != nil {
 			panic(err)
 		}
 	}()
@@ -40,6 +40,8 @@ func Entry() {
 	serviceBundle, err := services.NewBundle(ctx)
 	if err != nil {
 		panic(err) }
+
+	serviceBundle.GrpcSvc = *grpcConnection
 
 	router := mux.NewRouter()
 	http_routing.BundleAll(ctx, router, *serviceBundle)

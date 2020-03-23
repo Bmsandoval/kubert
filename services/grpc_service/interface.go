@@ -1,15 +1,14 @@
-package grpc
+package grpc_service
 
 import (
 	"fmt"
 	"github.com/bmsandoval/kubert/configs"
-	"github.com/bmsandoval/kubert/grpc/protos"
 	"google.golang.org/grpc"
 )
 
 type Connection struct {
-	Server *grpc.ClientConn
-	GreeterClient protos.GreeterClient
+	Server        *grpc.ClientConn
+	GreeterClient GreeterClient
 }
 
 var server Connection
@@ -32,7 +31,7 @@ func Start(config configs.Configuration) (*Connection, error){
 }
 
 func registerClients() {
-	c := protos.NewGreeterClient(server.Server)
+	c := NewGreeterClient(server.Server)
 	server.GreeterClient = c
 }
 

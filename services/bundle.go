@@ -2,16 +2,15 @@ package services
 
 import (
 	"github.com/bmsandoval/kubert/library/appcontext"
-	"github.com/bmsandoval/kubert/services/hello_service"
+	"github.com/bmsandoval/kubert/services/grpc_service"
 	"reflect"
 )
 
 type Bundle struct {
-	HelloSvc hello_service.Service
+	GrpcSvc grpc_service.Connection
 }
 
 var bundlables = []bundlable{
-	hello_service.Helpable{},
 }
 
 type bundlable interface {

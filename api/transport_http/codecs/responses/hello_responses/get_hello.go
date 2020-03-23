@@ -17,7 +17,7 @@ type Errorer interface {
 }
 
 type GetHelloResponse struct {
-	Response string
+	Response []string
 }
 
 func MakeGetHelloResponseEncoder(appCtx appcontext.Context) (kithttp.EncodeResponseFunc, error) {
