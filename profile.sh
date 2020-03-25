@@ -52,12 +52,13 @@ kubertMockServices () {
           do
             PROTO_FILE_NAME=$(basename "${PROTO}")
             PROTO_FILE_NAME_STRIP_EXT=${PROTO_FILE_NAME/.go/}
+            PROTO_NO_PB=${PROTO_FILE_NAME_STRIP_EXT/.pb/}
             PROTO_REPLACED_NAME=${PROTO_FILE_NAME_STRIP_EXT/./_}
+            PROTO_SERVICE_NAME=$(echo "${PROTO_NO_PB}" | awk '{for (i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)} 1')
             mockgen \
-                -source="${SERVICE_PATH}"/"${PROTO_FILE_NAME}" \
-                -destination=mocks/${MOCK_FOLDER}_mocks/"${PROTO_REPLACED_NAME}"_mock.go \
                 -package=${MOCK_FOLDER}_mocks \
-                -mock_names Service=Mock_"${PROTO_REPLACED_NAME}"
+                -destination=mocks/${MOCK_FOLDER}_mocks/"${PROTO_REPLACED_NAME}"_mock.go \
+                github.com/bmsandoval/kubert/services/"${SERVICE_FOLDER_NAME}" "${PROTO_SERVICE_NAME}Client"
           done
         elif [[ -f ${SERVICE_PATH}/interface.go ]]; then
             FOLDER_NAME="${SERVICE_PATH##*/}"
