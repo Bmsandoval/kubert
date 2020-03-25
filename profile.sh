@@ -40,33 +40,32 @@ kubertTestServers () {
 # Generate mock files for all services, putting the results in the proper file. renames some stuff for consistency.
 # If you update any services, recommend running this function to update the services for the tests.
 kubertMockServices () {
-    packageName="mockgen"
-
     MOCK_FOLDER="services"
     SERVICE_DIR="${KUBERT_DIR}/${MOCK_FOLDER}"
     SERVICES=$(find "${SERVICE_DIR}" -maxdepth 1 -mindepth 1 -type d)
     for SERVICE_PATH in ${SERVICES}
     do
-        if [[ -f ${SERVICE_PATH}/interface.go ]]; then
-            FOLDER_NAME="${SERVICE_PATH##*/}"
-            mockgen \
-                -source=${SERVICE_PATH}/interface.go \
-                -destination=mocks/${MOCK_FOLDER}_mocks/${FOLDER_NAME}_mock.go \
-                -package=${MOCK_FOLDER}_mocks \
-                -mock_names Service=Mock_${FOLDER_NAME}
-        else
+        SERVICE_FOLDER_NAME=$(basename "${SERVICE_PATH}")
+        if [[ "${SERVICE_FOLDER_NAME}" == grpc* ]]; then
           PROTOS=$(find "${SERVICE_PATH}" | grep ".pb.go")
           for PROTO in ${PROTOS}
           do
-            PROTO_FILE_NAME=$(basename "${PROTOS}")
+            PROTO_FILE_NAME=$(basename "${PROTO}")
             PROTO_FILE_NAME_STRIP_EXT=${PROTO_FILE_NAME/.go/}
             PROTO_REPLACED_NAME=${PROTO_FILE_NAME_STRIP_EXT/./_}
             mockgen \
-                -source=${SERVICE_PATH}/${PROTO_FILE_NAME} \
+                -source="${SERVICE_PATH}"/"${PROTO_FILE_NAME}" \
                 -destination=mocks/${MOCK_FOLDER}_mocks/"${PROTO_REPLACED_NAME}"_mock.go \
                 -package=${MOCK_FOLDER}_mocks \
                 -mock_names Service=Mock_"${PROTO_REPLACED_NAME}"
           done
+        elif [[ -f ${SERVICE_PATH}/interface.go ]]; then
+            FOLDER_NAME="${SERVICE_PATH##*/}"
+            mockgen \
+                -source="${SERVICE_PATH}"/interface.go \
+                -destination=mocks/${MOCK_FOLDER}_mocks/"${FOLDER_NAME}"_mock.go \
+                -package=${MOCK_FOLDER}_mocks \
+                -mock_names Service=Mock_"${FOLDER_NAME}"
         fi
     done
 }

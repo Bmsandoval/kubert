@@ -1,4 +1,4 @@
-package hello_test
+package greeting_endpoints_test
 
 import (
 	"github.com/golang/protobuf/ptypes/timestamp"

@@ -1,4 +1,4 @@
-package hello_test
+package greeting_endpoints_test
 
 import (
 	"context"
@@ -12,7 +12,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"time"
 )
 
 func TestGetHelloServer(t *testing.T) {
@@ -46,7 +45,7 @@ func TestGetHelloServer(t *testing.T) {
 
 			f := greeting_endpoints.MakeGetHelloEndpoint(appcontext.Context{}, *serviceBundle)
 			requestTestData := data.Request.(hello_requests.GetHelloRequest)
-			responseTestData := data.Response.(hello_requests.GetHelloRequest)
+			responseTestData := data.Response.(hello_responses.GetHelloResponse)
 			responseData, _ := f(context.Background(), requestTestData)
 			// assert results
 			//assert.Equal(t, testData.ResponseCode, res.Status.Code)
@@ -60,11 +59,9 @@ func MockGetHelloRequiredServices(mockCtrl *gomock.Controller, data GetHelloTest
 	greeterMock := services_mocks.NewMockGreeterClient(mockCtrl)
 	greeterExpect := greeterMock.EXPECT()
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
 	if data.MockGetHello != nil {
-		greeterExpect.GetHello(ctx, data.MockGetHello.InRequest).Return(
-				data.MockGetHello.OutReply,
+		greeterExpect.GetHello(gomock.Any(), &data.MockGetHello.InRequest).Return(
+				&data.MockGetHello.OutReply,
 				data.MockGetHello.OutError)
 	}
 
